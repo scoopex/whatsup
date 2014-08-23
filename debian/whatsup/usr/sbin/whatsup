@@ -1,0 +1,180 @@
+#!/usr/bin/env python
+
+#########################################################
+###
+### Marc Schoechlin [ms-debiantools@256bit.org]
+###
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+import glob,sys,re,os,getopt
+
+import apt_pkg
+
+rundir=os.path.dirname(os.path.realpath(__file__))
+sys.path.append(rundir+"/../lib/whatsup/");
+sys.path.append(rundir+"/../share/whatsup/");
+
+import mmmod
+import apttool
+
+####################################################################
+###
+### Helpers
+
+def usage():
+  print sys.argv[0]+" {-f  | -h  | -p pid...  | -P pkg...  | -r pkg...  | -e file... }  [-a  | -d  | -i ]"
+  print '''
+ -f  show all information about running software 
+ -h  view this help message
+ -d  debug mode
+ -p  display the packagenames of the given pids
+     (running executable)
+ -P  display all process ids which use parts of the given packages
+ -r  resolve all processes which have file dependencies to files in
+     the given packages
+ -i  display names of init scripts contained in the resulted
+     packages
+ -e  extract package names of given packagefiles
+ -a  apt-mode 
+     i.e. if you call this tool from /etc/apt/apt.conf.d/99whatsup
+     the names of the packages are read from stdin
+'''
+
+def debug(message):
+  if "debug" in flags:
+     print "DEBUG: "+message
+
+##################################################################
+###
+### MAIN
+
+
+flags = []
+## evaluate the commandline arguments
+try:
+    opt, argv = getopt.getopt(sys.argv[1:], "fadeihpPr","fadeihpPr")
+except:
+    print "Error parsing commandline arguments"
+    usage()
+    sys.exit(1)
+
+for o, a in opt:
+    if o == "-h":
+      usage()
+    elif o == "-d":
+      flags.append("debug")
+    elif o == "-p":
+      flags.append("pid")
+    elif o == "-P":
+      flags.append("package")
+    elif o == "-r":
+      flags.append("resolve")
+    elif o == "-i":
+      flags.append("initscripts")
+    elif o == "-e":
+      flags.append("extractpackagename")
+    elif o == "-a":
+      flags.append("aptmode")
+      print "**** invocation of 'whatsup' by apt"
+    elif o == "-f":
+      flags.append("full")
+    else:
+      usage()
+
+if (("full" not in flags) and len(sys.argv) < 2):
+  usage()
+  sys.exit(1)
+
+debug("flags : %s" % " ; ".join(flags))
+
+# No options in argv, get arguments (pids,packages,...)
+arguments = []
+
+debug("argv  : %s" % " ; ".join(argv))
+
+if "aptmode" in flags:
+  arguments = apttool.AptTools().read_apt_pipeline()
+else:
+  for pkg in argv:
+     if pkg.startswith("-"):
+       usage()
+       sys.exit(1)
+     elif "extractpackagename" in flags:
+       arguments.append(pkg.split("_")[0])
+     else:
+       arguments.append(pkg)
+
+
+debug("args  : %s" % " ; ".join(arguments))
+
+mmap = mmmod.MemoryMappedFiles()
+
+if ("full" in flags):
+  for item,value in mmap.getAllFiles().items():
+    print item
+    print "  pids: "+";".join(value["pids"])
+
+# get by pid
+if "pid" in flags:
+   formatstring = "%-9s %-40s %s"
+   if len(arguments) > 0:
+     print formatstring % ("pid","package","binary")
+   for pid in arguments:
+     result = mmap.getPackageByPid(pid)
+     if result.has_key("pkg"):
+       print formatstring % (result['pid'],result["pkg"],result["file"])
+
+# get by package names
+if "package" in flags:
+   result = mmap.queryPackages(arguments)
+
+   # detect the size of the output columns
+   size = 7 
+   for pkg,pid in result.items():
+     size = max(len(pkg),size)
+   formatstring = "%-"+str(size)+"s : %s"
+
+   # print the results
+   if len(result) > 0:
+    print formatstring % ("package","pid")
+   for pkg,pid in result.items():
+     print formatstring % (pkg," ".join(pid))
+
+# show all packages which are running and using the given packages
+if "resolve" in flags:
+   running = mmap.resolveRunningPackages(arguments)
+   # detect the sizes of the output columns
+   sizes = [7,4,0]
+   for rpkg,upkg in running.items():
+     sizes[0] = max(len(rpkg),sizes[0])
+     sizes[1] = max(len(",".join(upkg["pids"])),sizes[1])
+   formatstring = "%-"+str(sizes[0])+"s : %-"+str(sizes[1])+"s : %s"
+
+   # print the results
+   if len(running) > 0:
+    print formatstring % ("package","pids","dependend-to-pkg")
+   for rpkg,upkg in running.items():
+     print formatstring % (rpkg,",".join(upkg["pids"]),",".join(upkg["pkgs"]))
+
+   if "initscripts" in flags:
+     result_exists = 0
+     for pkg,scripts in mmap.listInitScripts(running.keys()).items():
+       if (result_exists == 0):
+        print 
+        print "%-20s : %s" % ("package" , "initscripts")
+        result_exists = 1
+       print "%-20s : %s" % (pkg,",".join(scripts))
+

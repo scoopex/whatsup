@@ -1,0 +1,3 @@
+DPkg::Pre-Install-Pkgs { "/home/mschoechlin/svn/ms-scripts/projects/debiantools/trunk/sbin/whatsup -r -a -i "; };
+DPkg::Tools::Options::/home/mschoechlin/svn/ms-scripts/projects/debiantools/trunk/sbin/whatsup::Version "2";
+

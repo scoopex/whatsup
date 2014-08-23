@@ -1,0 +1,16 @@
+Source: whatsup
+Section: admin
+Priority: extra
+Maintainer: Marc Schoechlin <ms-debian@256bit.org>
+Build-Depends: debhelper (>= 5), docbook-to-man (>= 2), python (>= 2.4), python-support (>= 0.5.6), make (>= 3), dpkg (>= 1.13)
+Standards-Version: 3.7.2
+
+Package: whatsup
+Architecture: any
+Depends: python (>= 2.4), python-support (>= 0.2), apt (>= 0.5.3), debianutils (>= 2.0.2), dpkg (>= 1.13)
+Description: analyze package dependencies of running processes
+ This package cointains a tool named "whatsup" which analyzes the package 
+ dependencies of running processes. Especially on server systems this is 
+ useful after security- and bugfix-updates to find out which processes have to 
+ be restarted. The "whatsup" tool is automatically called after 
+ every apt-operation.

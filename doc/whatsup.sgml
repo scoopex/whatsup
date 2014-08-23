@@ -1,0 +1,226 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+<!-- Process this file with docbook-to-man to generate an nroff manual
+     page: `docbook-to-man manpage.sgml > manpage.1'.  You may view
+     the manual page with: `docbook-to-man manpage.sgml | nroff -man |
+     less'.  A typical entry in a Makefile or Makefile.am is:
+
+manpage.1: manpage.sgml
+	docbook-to-man $< > $@
+
+    
+	The docbook-to-man binary is found in the docbook-to-man package.
+	Please remember that if you create the nroff version in one of the
+	debian/rules file targets (such as build), you will need to include
+	docbook-to-man in your Build-Depends control field.
+
+  -->
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "<firstname>Marc</firstname>">
+  <!ENTITY dhsurname   "<surname>Schoechlin</surname>">
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>Oktober  4, 2007</date>">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>ms-debian@256bit.org</email>">
+  <!ENTITY dhusername  "Marc Schoechlin">
+  <!ENTITY dhucpackage "<refentrytitle>WHATSUP</refentrytitle>">
+  <!ENTITY dhpackage   "whatsup">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;
+    </author>
+    <copyright>
+      <year>2003</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    &dhucpackage;
+
+    &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+    <refpurpose>program to analyze package dependencies of running processes</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="req">
+        <arg><option>-f</option></arg>
+        <arg><option>-h</option></arg>
+        <arg><option>-p <replaceable>pid...</replaceable></option></arg>
+        <arg><option>-P <replaceable>pkg...</replaceable></option></arg>
+        <arg><option>-r <replaceable>pkg...</replaceable></option></arg>
+        <arg><option>-e <replaceable>file...</replaceable></option></arg>
+      </group>
+      <group choice="opt">
+       <arg><option>-a</option></arg>
+       <arg><option>-d</option></arg>
+       <arg><option>-i</option></arg>
+      </group>
+<!--
+      <arg><option>-e <replaceable>ithis</replaceable></option></arg>
+      <arg><option>example <replaceable>that</replaceable></option></arg>
+-->
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>This manual page documents briefly the <command>&dhpackage;</command> command.</para>
+
+     <para>
+     This tool provides information about package and file dependencies of currently running processes.
+     Information about the files which are currently associated with a certain process is provided by ia file in the proc-filesystem.
+     Each line in /proc/$pid/maps represents a mapped region of the process. An entry in /proc/$pid/maps looks like this:
+<screen>
+8048000-08051000 r-xp 00000000 fe:08 76910      /sbin/init
+08051000-08052000 rwxp 00008000 fe:08 76910      /sbin/init
+08052000-08073000 rwxp 08052000 00:00 0          [heap]
+b7d4a000-b7d4b000 rwxp b7d4a000 00:00 0
+b7d4b000-b7d4d000 r-xp 00000000 fe:08 231672     /lib/tls/i686/cmov/libdl-2.5.so
+b7d4d000-b7d4f000 rwxp 00001000 fe:08 231672     /lib/tls/i686/cmov/libdl-2.5.so
+b7d4f000-b7e8a000 r-xp 00000000 fe:08 231662     /lib/tls/i686/cmov/libc-2.5.so
+</screen>
+
+     Especially on server systems this is useful after security- and bugfix-updates to find out which processes have to be restarted.
+     The <command>&dhpackage;</command> tool is automatically called after every apt-operation.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>A summary of options is included below : 
+    <variablelist>
+      <varlistentry>
+        <term><option>-h</option>
+        </term>
+        <listitem>
+          <para>Show summary of options.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-f</option>
+        </term>
+        <listitem>
+          <para>Display all files which are in use by currently running processes. Every filename
+            is followed by a list of process ids which are using this file. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-p</option>
+        </term>
+        <listitem>
+          <para>Resolve the names of the debian packages of the given proccess ids. This option displays
+          a list of the given pids, the package name and the name of the running binary.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-P</option>
+        </term>
+        <listitem>
+          <para>Display all process ids which use files which are part the given debian packages</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-r</option>
+        </term>
+        <listitem>
+          <para>Same as "-P", but also display the name of the debian-package the process-binary belongs to.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-i</option>
+        </term>
+        <listitem>
+          <para>Display names of init scripts contained in the resulted packages. This option can be used
+          with the "-r" switch.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-e</option>
+        </term>
+        <listitem>
+          <para>Extract package names of given packagefiles - i.e. a package name like "foobar_2.86.ds1-38_i386.deb" is interpreted as "foobar". This option can be used with the "-r" and "-P" switch.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-a</option>
+        </term>
+        <listitem>
+          <para>This option can be used to pass package-names over stdin by apt-get - i.e. calls over /etc/apt/apt.conf.d/99whatsup. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-d</option>
+        </term>
+        <listitem>
+          <para>Debug mode</para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+</refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>n/a</para>
+  </refsect1>
+  <refsect1>
+
+    <title>AUTHOR</title>
+
+    <para>This manual page was written by &dhusername; &dhemail;.  Permission is
+      granted to copy, distribute and/or modify this document under
+      the terms of the &gnu; General Public License, Version 2 any 
+	  later version published by the Free Software Foundation.
+    </para>
+	<para>
+	  On Debian systems, the complete text of the GNU General Public
+	  License can be found in /usr/share/common-licenses/GPL.
+	</para>
+
+  </refsect1>
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-omittag:t
+sgml-shorttag:t
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-default-dtd-file:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:nil
+sgml-local-ecat-files:nil
+End:
+-->
+
+

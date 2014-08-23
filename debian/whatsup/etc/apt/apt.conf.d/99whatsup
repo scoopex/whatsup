@@ -1,0 +1,3 @@
+DPkg::Pre-Install-Pkgs { "/usr/sbin/whatsup -r -a -i "; };
+DPkg::Tools::Options::/usr/sbin/whatsup::Version "2";
+

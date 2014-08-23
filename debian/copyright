@@ -1,0 +1,14 @@
+This package was debianized by Marc Schoechlin <ms-debian@256bit.org> on
+Thu,  4 Oct 2007 13:30:34 +0200.
+
+The source can be downloaded from http://download.256bit.org/mschoechlin/debiantools.tgz
+
+Upstream Author: Marc Schoechlin <ms-debian@256bit.org>
+
+Copyright: 2008, Marc Schoechlin
+
+License: GPL3
+
+The Debian packaging is (C) 2007, Marc Schoechlin <ms-debian@256bit.org> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+
