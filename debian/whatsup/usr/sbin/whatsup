@@ -133,9 +133,10 @@ if "pid" in flags:
    if len(arguments) > 0:
      print formatstring % ("pid","package","binary")
    for pid in arguments:
-     result = mmap.getPackageByPid(pid)
-     if result.has_key("pkg"):
-       print formatstring % (result['pid'],result["pkg"],result["file"])
+     result = mmap.getPackagesByPid(pid)
+     for item in result:
+        if item.has_key("pkg"):
+            print formatstring % (item['pid'],item["pkg"],item["file"])
 
 # get by package names
 if "package" in flags:

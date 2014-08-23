@@ -92,34 +92,31 @@ class MemoryMappedFiles:
          self.installed_files[file] = package
        phandle.close()
 
-  def getPackageByPid(self,pid):
+  def getPackagesByPid(self,pid):
 
-    binary = ""
-    ret = {}
+    ret = []
     if not os.path.isfile("/proc/%s/maps" % (pid)):
       print "it seems that process with pid '%s' does not exist anymore" % pid
       return ret
 
+    files = {}
+    # find all files
     for line in open("/proc/%s/maps" % (pid) , 'r').readlines():
       words = re_whitespaces.split(line)
-      # stop at the first mact which looks like a filename
-      if ((len(words) == 7) and 
-          (re_filename.match(words[5]))):
-         binary = words[5],
-         break
-#      if ((len(words) == 7) and 
-#          (words[5] == "[heap]")):
-#         break
-     
-    if ( binary != "" ):
-      phandle = os.popen("dpkg -S '%s' 2>/dev/null" % binary, 'r')
+      if (len(words) == 7) and (re_filename.match(words[5])):
+         files[words[5]] = 1
+
+    for filename in files.iterkeys():
+      phandle = os.popen("dpkg -S '%s' 2>/dev/null" % filename, 'r')
       for line in phandle:
           line = line.rstrip("\n")
-          words = re_whitespacescolon.split(line)
+          words = re_whitespaces.split(line)
           if (len(words) == 2):
-            ret["pkg"] = words[0]
-            ret["file"] = words[1]
-            ret["pid"] = pid
+            retitem = {}
+            retitem["pkg"] = words[0]
+            retitem["file"] = words[1]
+            retitem["pid"] = pid
+            ret.append(retitem)
       phandle.close()
     return ret
 
