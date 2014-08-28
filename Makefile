@@ -1,6 +1,6 @@
 
 DESTDIR=$(PWD)/debian/whatsup/
-TESTPKG=init
+TESTPKG= "`dpkg -S /sbin/init|cut -d ':' -f1`"
 
 all:
 	 true
@@ -18,7 +18,7 @@ test: doc install
 	 $(DESTDIR)/usr/sbin/whatsup -P "$(TESTPKG)" |awk '{print $$3}'|grep "1"
 	 $(DESTDIR)/usr/sbin/whatsup -r "$(TESTPKG)" |awk '{print $$5}'|grep "$(TESTPKG)"
 	 $(DESTDIR)/usr/sbin/whatsup -r -e "$(TESTPKG)_2.86.ds1-38_i386.deb" |awk '{print $$5}'|grep "$(TESTPKG)"
-	 cat examples/apt-mode-testcase.txt|$(DESTDIR)/usr/sbin/whatsup -r -a -i|awk '{print $$5}'|grep "$(TESTPKG)"
+	 cat examples/apt-mode-testcase.txt|sed "~s,sysvinit,$(TESTPKG),"|$(DESTDIR)/usr/sbin/whatsup -r -a -i|awk '{print $$5}'|grep "$(TESTPKG)"
 	 @echo "-- all testcases sucessfully executed --"
 
 
@@ -44,12 +44,13 @@ install: doc
 	 @echo "--- install to $(DESTDIR) finished ---"
 
 pkg:
+	 rm -f ../whatsup_*.*.*.*_*.changes ../whatsup_*.*.*.*_*.deb ../whatsup_*.*.*.*.dsc ../whatsup_*.*.*.*.tar.gz
 	 dpkg-buildpackage -rfakeroot -I.svn -us -uc
 	 #dpkg-buildpackage -rfakeroot -I.svn 
-	 @echo "*** contents of the package"
-	 dpkg --contents ../`basename $(PWD)|tr '-' '_'`*.deb
 	 @echo "*** contents of the source-package"
 	 tar ztvf ../`basename $(PWD)|tr '-' '_'`*.tar.gz 
+	 @echo "*** contents of the package"
+	 dpkg --contents ../whatsup*.deb
 
 distclean:
 	@echo no need to do that

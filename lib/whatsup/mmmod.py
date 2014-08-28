@@ -68,7 +68,7 @@ class MemoryMappedFiles:
     #for file in self.mapped_files.keys():
     #   if self.mapped_files[file].has_key("pids"):
        # for pid in self.mapped_files[file]["pids"]:
-       #    res = self.getPackageByPid(pid)
+       #    res = self.getPackagesByPid(pid)
        #    res.setdefault("pkg",())
     return ret
 
@@ -154,14 +154,15 @@ class MemoryMappedFiles:
      pids = self.queryPackages(packages)
      for pkg,pids in pids.items():
        for pid in pids:
-         ppkg = self.getPackageByPid(pid)
-         if ppkg.has_key("pkg"):
-           running.setdefault(ppkg["pkg"],{})
-           running[ppkg["pkg"]].setdefault("pkgs",[])
-           running[ppkg["pkg"]].setdefault("pids",[])
-           if pkg not in running[ppkg["pkg"]]["pkgs"]:
-             running[ppkg["pkg"]]["pkgs"].append(pkg)
-           if pid not in running[ppkg["pkg"]]["pids"]:
-             running[ppkg["pkg"]]["pids"].append(pid)
+         ppkg = self.getPackagesByPid(pid)
+         for ppkg_item in ppkg:
+             if ppkg_item.has_key("pkg"):
+               running.setdefault(ppkg_item["pkg"],{})
+               running[ppkg_item["pkg"]].setdefault("pkgs",[])
+               running[ppkg_item["pkg"]].setdefault("pids",[])
+               if pkg not in running[ppkg_item["pkg"]]["pkgs"]:
+                 running[ppkg_item["pkg"]]["pkgs"].append(pkg)
+               if pid not in running[ppkg_item["pkg"]]["pids"]:
+                 running[ppkg_item["pkg"]]["pids"].append(pid)
      return running
 

@@ -3,14 +3,16 @@ whatsup
 
 resolve package dependencies of running packages 
 
-DISCLAIMER: 
-This tool does not work with recent ubuntu/debian releases. It needs a bit of rework - this is in progress.
+This tool helps to find out, which service/Program needs not be restarted after a package update.
 
 # Build
 
 ```
 sudo apt-get install docbook-to-man
 sudo make DESTDIR=/tmp/foo/ test 
+sudo make DESTDIR=/tmp/foo/ pkg
+ls ../whatsup*.deb
+dpkg -i ../whatsup*.deb
 ```
 
 # Usage
@@ -30,7 +32,7 @@ DESCRIPTION
        This  tool  provides  information  about  package  and  file  dependencies  of  currently  running  processes.   Information  about  the files which are currently associated with a certain process is provided by ia file in the proc-filesystem.  Each line in
        /proc/$pid/maps represents a mapped region of the process. An entry in /proc/$pid/maps looks like this:
 
-       8048000-08051000 r-xp 00000000 fe:08 76910      /sbin/init
+       08048000-08051000 r-xp 00000000 fe:08 76910      /sbin/init
        08051000-08052000 rwxp 00008000 fe:08 76910      /sbin/init
        08052000-08073000 rwxp 08052000 00:00 0          [heap]
        b7d4a000-b7d4b000 rwxp b7d4a000 00:00 0
