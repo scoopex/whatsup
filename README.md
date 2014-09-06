@@ -5,6 +5,8 @@ resolve package dependencies of running packages
 
 This tool helps to find out, which service/Program needs not be restarted after a package update.
 
+You love this project? Send a donation to the following bitcoin wallet: 1EGoDhAmaZbLazNmdZ9vDu2zYgFCKsNur5 
+
 # Build
 
 ```
