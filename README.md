@@ -67,7 +67,7 @@ SEE ALSO
        n/a
 
 AUTHOR
-       This manual page was written by Marc Schoechlin ms-debian@256bit.org.  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 2 any later version published by the Free Software  Foun‐
+       This manual page was written by Marc Schoechlin. Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 2 any later version published by the Free Software  Foun‐
        dation.
 
        On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL.
